@@ -14,6 +14,7 @@ app = typer.Typer(
     name="tools-cli",
     help="A comprehensive CLI tool for Kubernetes and infrastructure management",
     add_completion=True,
+    # context_settings=
 )
 
 # Register command groups

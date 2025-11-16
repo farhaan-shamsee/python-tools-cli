@@ -1,7 +1,7 @@
 """Tool installation and management commands."""
 
 import typer
-from typing import List, Optional
+from typing import List
 from rich.table import Table
 from core.tool_manager import ToolManager
 from utils.logger import console, log_success, log_error

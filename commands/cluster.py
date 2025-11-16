@@ -20,7 +20,7 @@ def get_cluster_manager() -> ClusterManager:
 
 @cluster_app.command()
 def create(
-    name: str = typer.Option(..., help="Cluster name"),
+    name: str = typer.Argument(..., help="Cluster name"),
     provider: str = typer.Option("local", help="Cloud provider (local, aws, alicloud)"),
     ports: Optional[str] = typer.Option(None, help="Ports to open (comma-separated)"),
     registry: bool = typer.Option(False, help="Create local registry"),
@@ -86,7 +86,7 @@ def list(
 
 @cluster_app.command()
 def info(
-    name: str = typer.Option(..., help="Cluster name"),
+    name: str = typer.Argument(..., help="Cluster name"),
     provider: str = typer.Option("local", help="Cloud provider"),
 ):
     """Get cluster information."""
@@ -114,7 +114,7 @@ def info(
 
 @cluster_app.command()
 def bootstrap(
-    name: str = typer.Option(..., help="Cluster name"),
+    name: str = typer.Argument(..., help="Cluster name"),
     provider: str = typer.Option("local", help="Cloud provider"),
 ):
     """Bootstrap cluster with GitOps tools (Flux CD)."""

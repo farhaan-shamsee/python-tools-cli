@@ -3,7 +3,7 @@
 import typer
 from pathlib import Path
 from core.config_handler import ConfigHandler
-from utils.logger import log_success, log_error, log_info
+from utils.logger import log_success, log_error, log_info, console
 from utils.exceptions import ConfigurationError
 
 config_app = typer.Typer(help="Configuration file management")
