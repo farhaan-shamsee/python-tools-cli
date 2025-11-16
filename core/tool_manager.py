@@ -25,7 +25,7 @@ class ToolManager:
         },
         "argocd": {
             "description": "GitOps toolkit for Kubernetes",
-            "check_command": ["argocd", "version"],
+            "check_command": ["argocd", "version", "--client"],
         },
     }
     

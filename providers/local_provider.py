@@ -63,7 +63,8 @@ class LocalProvider(BaseProvider):
         
         # Add registry if specified
         if kwargs.get("use_registry", self.config.get("useLocalRegistry", False)):
-            command.append("--registry-create")
+            registry_name = f"{name}-registry"
+            command.extend(["--registry-create", registry_name])
         
         stdout, stderr, returncode = self._run_command(command)
         

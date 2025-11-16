@@ -20,22 +20,32 @@ def get_cluster_manager() -> ClusterManager:
 
 @cluster_app.command()
 def create(
-    name: str = typer.Argument(..., help="Cluster name"),
-    provider: str = typer.Option("local", help="Cloud provider (local, aws, alicloud)"),
-    ports: Optional[str] = typer.Option(None, help="Ports to open (comma-separated)"),
-    registry: bool = typer.Option(False, help="Create local registry"),
+    name: Optional[str] = typer.Argument(None, help="Cluster name (optional, reads from config if not provided)"),
+    provider: Optional[str] = typer.Option(None, help="Cloud provider (local, aws, azure) - reads from config if not provided"),
+    ports: Optional[str] = typer.Option(None, help="Ports to open (comma-separated) - reads from config if not provided"),
+    registry: Optional[bool] = typer.Option(None, help="Create local registry - reads from config if not provided"),
 ):
-    """Create a new cluster."""
+    """Create a new cluster. Uses config.yaml values when CLI arguments are not provided."""
     try:
-        manager = get_cluster_manager()
+        config_handler = ConfigHandler()
+        config = config_handler.load()
+        cluster_config = config.get("clusterConfig", {})
+        
+        # Use CLI arguments or fall back to config values
+        cluster_name = name or cluster_config.get("name", "my-cluster")
+        cluster_provider = provider or cluster_config.get("type", "local")
+        cluster_ports = ports or cluster_config.get("portsToOpen")
+        cluster_registry = registry if registry is not None else cluster_config.get("useLocalRegistry", False)
+        
+        manager = ClusterManager(config)
         
         kwargs = {}
-        if ports:
-            kwargs["ports_to_open"] = ports
-        if registry:
-            kwargs["use_registry"] = registry
+        if cluster_ports:
+            kwargs["ports_to_open"] = cluster_ports
+        if cluster_registry:
+            kwargs["use_registry"] = cluster_registry
         
-        manager.create_cluster(name, provider, **kwargs)
+        manager.create_cluster(cluster_name, cluster_provider, **kwargs)
         
     except ToolsCLIException as e:
         log_error(str(e))
