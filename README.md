@@ -2,7 +2,7 @@
 
 ## Usage
 
-```python
+```sh
 # Version command
 python cli.py version
 
