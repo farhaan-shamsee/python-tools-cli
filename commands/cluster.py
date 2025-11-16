@@ -54,13 +54,21 @@ def create(
 
 @cluster_app.command()
 def delete(
-    name: str = typer.Option(..., help="Cluster name"),
-    provider: str = typer.Option("local", help="Cloud provider"),
+    name: Optional[str] = typer.Argument(None, help="Cluster name (optional, reads from config if not provided)"),
+    provider: Optional[str] = typer.Option(None, help="Cloud provider (local, aws, azure) - reads from config if not provided"),
 ):
     """Delete an existing cluster."""
     try:
-        manager = get_cluster_manager()
-        manager.delete_cluster(name, provider)
+        config_handler = ConfigHandler()
+        config = config_handler.load()
+        cluster_config = config.get("clusterConfig", {})
+
+        # Use CLI arguments or fall back to config values
+        cluster_name = name or cluster_config.get("name", "my-cluster")
+        cluster_provider = provider or cluster_config.get("type", "local")
+
+        manager = ClusterManager(config)
+        manager.delete_cluster(cluster_name, cluster_provider)
         
     except ToolsCLIException as e:
         log_error(str(e))

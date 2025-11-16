@@ -79,10 +79,20 @@ class LocalProvider(BaseProvider):
         """Delete a local k3d cluster."""
         log_info(f"Deleting local k3d cluster: {name}")
         
+        # First check if cluster exists
+        existing_clusters = self.list_clusters()
+        if name not in existing_clusters:
+            log_error(f"Cluster '{name}' not found")
+            raise ClusterOperationError(f"Cluster '{name}' does not exist")
+        
         command = ["k3d", "cluster", "delete", name]
         stdout, stderr, returncode = self._run_command(command)
         
         if returncode == 0:
+            # Check if deletion actually happened (k3d returns 0 even for non-existent clusters)
+            if "No clusters found" in stdout or "No clusters found" in stderr:
+                log_error(f"Cluster '{name}' not found")
+                raise ClusterOperationError(f"Cluster '{name}' does not exist")
             log_success(f"Cluster '{name}' deleted successfully")
             return True
         else:
